@@ -1,0 +1,53 @@
+# 공통 의존성 및 핵심 
+node_modules/
+jspm_packages/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# 환경변수 & 보안 키 
+.env
+.env.*
+*.pem
+
+
+# 빌드 결과물 & 임시 파일
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+.output/
+.swc
+
+# 4. frontend(Vite/React/TS/Granite) 관련 캐시
+.granite
+.vite/
+.eslintcache
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# 로그 파일
+logs
+*.log
+
+#OS 및 에디터 설정
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 테스트 커버리지 및 기타
+coverage/
+.vercel
+.serverless
