@@ -45,19 +45,22 @@ export const storage = {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
     return updatedSession;
   },
-
-  updateMessageContent: (sessionId: string, messageId: string, content: string): void => {
-    const sessions = storage.getSessions();
-    const sessionIndex = sessions.findIndex(s => s.id === sessionId);
-    if (sessionIndex !== -1) {
-      const messageIndex = sessions[sessionIndex].messages.findIndex(m => m.id === messageId);
-      if (messageIndex !== -1) {
-        sessions[sessionIndex].messages[messageIndex].content = content;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+updateMessageContent: (sessionId: string, messageId: string, content: string, duration?: number): Session | null => {
+  const sessions = storage.getSessions();
+  const sessionIndex = sessions.findIndex(s => s.id === sessionId);
+  if (sessionIndex !== -1) {
+    const messageIndex = sessions[sessionIndex].messages.findIndex(m => m.id === messageId);
+    if (messageIndex !== -1) {
+      sessions[sessionIndex].messages[messageIndex].content = content;
+      if (duration !== undefined) {
+        sessions[sessionIndex].messages[messageIndex].duration = duration;
       }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+      return sessions[sessionIndex];
     }
-  },
-
+  }
+  return null;
+},
   updateFinalOutput: (sessionId: string, output: string): void => {
     const sessions = storage.getSessions();
     const sessionIndex = sessions.findIndex(s => s.id === sessionId);

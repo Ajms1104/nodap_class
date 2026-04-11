@@ -1,9 +1,10 @@
-export type Message = {
- id: string;
- role: 'user' | 'assistant';
- content: string;
- createdAt: Date;
-};
+export interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: Date;
+  duration?: number; // 답변에 걸린 시간 (초)
+}
 
 export type Session = {
  id: string;

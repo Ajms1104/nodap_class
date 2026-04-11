@@ -117,7 +117,7 @@ router.post('/', (req: Request, res: Response) => {
  *         description: SSE 스트리밍 응답
  */
 router.post('/:session_id/chat', async (req: Request, res: Response) => {
-  const { initial_input, messages, turn_count }: ChatRequest = req.body
+  const { initial_input, messages, turn_count, initial_image }: ChatRequest = req.body
 
   if (!initial_input || !messages || messages.length === 0) {
     res.status(400).json({ error: 'initial_input과 messages는 필수입니다' })
@@ -132,7 +132,7 @@ router.post('/:session_id/chat', async (req: Request, res: Response) => {
   try {
     await streamChat(initial_input, messages, turn_count, (chunk) => {
       res.write(`data: ${JSON.stringify({ type: 'text', value: chunk })}\n\n`)
-    })
+    }, initial_image)
     res.write('data: [DONE]\n\n')
   } catch (err) {
     console.error('chat error:', err)

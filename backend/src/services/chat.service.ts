@@ -49,19 +49,32 @@ export const streamChat = async (
   initialInput: string,
   messages: Message[],
   turnCount: number,
-  onChunk: (chunk: string) => void
+  onChunk: (chunk: string) => void,
+  initialImage?: string // 이미지 데이터 추가
 ): Promise<void> => {
   const systemPrompt = turnCount >= 5
     ? SYSTEM_PROMPT + FINAL_NUDGE
     : SYSTEM_PROMPT
 
+  // 이미지 파트 구성 (OpenAI Vision 형식)
+  const initialContent: OpenAI.Chat.ChatCompletionContentPart[] = [
+    { type: 'text', text: `[학습자가 제출한 코드/기획안]\n\n${initialInput}` }
+  ]
+
+  if (initialImage && initialImage.includes('base64,')) {
+    initialContent.push({
+      type: 'image_url',
+      image_url: { url: initialImage }
+    })
+  }
+
   const openaiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
     {
       role: 'user',
-      content: `[학습자가 제출한 코드/기획안]\n\n${initialInput}`
+      content: initialContent // 텍스트 + 이미지 동시 전달
     },
-    { role: 'assistant', content: '확인했습니다. 바로 살펴볼게요.' },
+    { role: 'assistant', content: '확인했습니다. 제출하신 자료(이미지 포함)를 바탕으로 학습을 도와드릴게요.' },
     ...messages.slice(0, -1).map(m => ({
       role: m.role === 'user' ? 'user' as const : 'assistant' as const,
       content: m.content

@@ -11,6 +11,7 @@ export interface ChatRequest {
   initial_input: string
   messages: Message[]
   turn_count: number
+  initial_image?: string
 }
 
 export interface SummaryRequest {
