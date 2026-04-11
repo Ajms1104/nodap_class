@@ -1,5 +1,4 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,11 +6,6 @@
 
 :root {
   font-family: 'Pretendard', system-ui, sans-serif;
-  /* 차분하고 고급스러운 미디엄 브라운 나무색 */
-  --desk-brown: #8b5e3c; 
-  --notebook-cover: #2d3436;
-  --paper-white: #ffffff;
-  --line-blue: #e2f1ff;
 }
 
 body {
@@ -20,39 +14,26 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  /* 인공 나무 질감 구현 */
-  background-color: #8b5e3c;
-  background-image: 
-    /* 1. 선명한 가로 나무결 패턴 */
-    repeating-linear-gradient(rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px),
-    /* 2. 나무 옹이와 불규칙한 결 느낌 */
-    linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(0,0,0,0.05) 100%),
-    /* 3. 리얼한 나무 텍스처 SVG 노이즈 */
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='woodFilter'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.05' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23woodFilter)' opacity='0.2'/%3E%3C/svg%3E");
-  background-blend-mode: soft-light;
+  /* 갈색 나무색 제거 -> 깔끔한 연회색 배경 */
+  background-color: #f1f5f9;
 }
 
-/* [통일된 줄노트 느낌] */
-.lined-paper {
-  background-color: var(--paper-white);
-  background-image: linear-gradient(var(--line-blue) 1px, transparent 1px);
-  background-size: 100% 3rem;
+#root { 
+  width: 100%; 
+  height: 100%; 
 }
 
-/* 중앙 접힌 그림자 */
-.spine-shadow {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 40px;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.08) 45%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.02) 100%);
-  z-index: 30;
+/* 스크롤바 커스텀 (현대적인 스타일) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
 }
-
-.handwritten {
-  font-family: 'Nanum Pen Script', cursive;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-#root { width: 100%; height: 100%; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

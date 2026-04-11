@@ -69,67 +69,30 @@ export default function SessionPage() {
     setIsLoading(true);
     const aiMessageId = crypto.randomUUID();
     
-    // 현재 핀이 꽂힌 줄 정보를 메시지에 포함
-    const focusContext = pinnedLines.length > 0 
-      ? `\n\n(참고: 학습자가 현재 ${pinnedLines.map(l => l + 1).join(', ')}행에 핀을 꽂고 집중적으로 분석하고 있습니다.)`
-      : '';
+    // 더미 응답 목록 (UI 테스트용)
+    const DUMMY_RESPONSES = [
+      "제시해주신 코드의 3번 라인을 다시 한번 살펴보시겠어요? 이 부분에서 데이터가 어떻게 변하는지 설명해주실 수 있나요?\n\n[질문] 이 변수의 역할은 무엇인가요?",
+      "좋은 접근입니다! 하지만 효율성 측면에서 조금 더 개선할 수 있는 방법이 있을 것 같아요. 루프 문을 줄일 수 있는 방법이 떠오르시나요?\n\n[질문] `map` 대신 다른 메서드를 고려해 보셨나요?",
+      "생각하신 논리가 흥미롭네요. 만약 입력값이 null인 경우에는 어떻게 동작할까요? 예외 처리에 대해 고민해봅시다.\n\n[질문] 예외 상황을 어떻게 방어할 계획이신가요?",
+      "구조적으로는 완벽해 보입니다. 다만 유지보수 관점에서 함수를 더 작게 쪼개볼 수 있을까요?\n\n[질문] 한 함수가 너무 많은 일을 하고 있지는 않나요?",
+      "거의 다 왔습니다! 지금까지의 논리를 바탕으로 전체적인 흐름을 한 문장으로 요약해 주실 수 있을까요?\n\n[질문] 이 로직의 핵심 아이디어는 무엇인가요?"
+    ];
 
     try {
-      const response = await fetch(`${API_BASE_URL}/sessions/${currentSession.id}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          initial_input: currentSession.initialInput + focusContext,
-          messages: messages.map(m => ({ role: m.role, content: m.content })),
-          turn_count: turnCount,
-          initial_image: currentSession.initialImage 
-        })
-      });
+      // AI 생각 중인 느낌을 주기 위한 가짜 지연 시간
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-      if (!response.body) throw new Error('No response body');
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let aiContent = '';
+      const aiContent = DUMMY_RESPONSES[turnCount % DUMMY_RESPONSES.length];
 
       const initialAiMsg: Message = {
         id: aiMessageId,
         role: 'assistant',
-        content: '',
+        content: aiContent,
         createdAt: new Date(),
       };
       
       const updated = storage.addMessage(currentSession.id, initialAiMsg);
       if (updated) setSession(updated);
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.slice(6).trim();
-            if (dataStr === '[DONE]') continue;
-            try {
-              const parsed = JSON.parse(dataStr);
-              if (parsed.type === 'text') {
-                aiContent += parsed.value;
-                setSession(prev => {
-                  if (!prev) return null;
-                  return {
-                    ...prev,
-                    messages: prev.messages.map(m => 
-                      m.id === aiMessageId ? { ...m, content: aiContent } : m
-                    )
-                  };
-                });
-              }
-            } catch (e) { }
-          }
-        }
-      }
       
       lastAiQuestionTime.current = Date.now();
       storage.updateMessageContent(currentSession.id, aiMessageId, aiContent);
@@ -137,8 +100,7 @@ export default function SessionPage() {
       if (finalData) setSession(finalData);
 
     } catch (error) {
-      console.error('AI Error:', error);
-      alert('AI 응답을 가져오는 중 오류가 발생했습니다.');
+      console.error('Mock AI Error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -186,19 +148,13 @@ export default function SessionPage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/sessions/${session.id}/finish`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_final_output: userFinalOutput })
-      });
-
-      if (!response.ok) throw new Error('Failed to finish session');
+      // 서버 호출 대신 1초 대기 (분석 중인 느낌 제공)
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       storage.updateFinalOutput(session.id, userFinalOutput);
       navigate(`/result/${session.id}`);
     } catch (error) {
       console.error('Final submit error:', error);
-      alert('최종 제출 중 오류가 발생했습니다.');
     } finally {
       setIsLoading(false);
     }
