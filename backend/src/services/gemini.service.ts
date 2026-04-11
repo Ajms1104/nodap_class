@@ -46,23 +46,40 @@ export const streamChat = async (
   initialInput: string,
   messages: Message[],
   turnCount: number,
-  onChunk: (chunk: string) => void
+  onChunk: (chunk: string) => void,
+  initialImage?: string // 이미지 데이터 추가 (Base64 형식 예상)
 ): Promise<void> => {
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
+    model: 'gemini-1.5-flash',
     systemInstruction: turnCount >= 5
       ? SYSTEM_PROMPT + FINAL_NUDGE
       : SYSTEM_PROMPT
   })
 
+  // 이미지 처리를 위한 파트 생성
+  let imagePart: any = null
+  if (initialImage && initialImage.includes('base64,')) {
+    const base64Data = initialImage.split('base64,')[1]
+    const mimeType = initialImage.split(';')[0].split(':')[1]
+    imagePart = {
+      inlineData: {
+        data: base64Data,
+        mimeType: mimeType
+      }
+    }
+  }
+
   const history = [
     {
       role: 'user' as const,
-      parts: [{ text: `[학습자가 제출한 코드/기획안]\n\n${initialInput}` }]
+      parts: [
+        { text: `[학습자가 제출한 코드/기획안]\n\n${initialInput}` },
+        ...(imagePart ? [imagePart] : []) // 이미지가 있으면 첫 메시지에 포함
+      ]
     },
     {
       role: 'model' as const,
-      parts: [{ text: '확인했습니다. 바로 살펴볼게요.' }]
+      parts: [{ text: '확인했습니다. 제출하신 자료(이미지 포함)를 바탕으로 학습을 도와드릴게요.' }]
     },
     ...messages.slice(0, -1).map(m => ({
       role: m.role === 'user' ? 'user' as const : 'model' as const,

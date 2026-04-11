@@ -1,0 +1,172 @@
+﻿VibeTutor 전체 개발 명세서 (최종 확정 - 스택 변경본)
+1. 프로젝트 개요
+"AI가 답을 주는 걸 구조적으로 막는 코딩 학습 파트너"
+
+
+MVP 기능 흐름
+
+
+1. 입력: 사용자가 코드 또는 기획안을 입력합니다.
+
+2. 분석: AI가 입력 내용을 읽고 분석합니다.
+
+3. 대화: AI가 헛점, 질문, 이해 확인을 바탕으로 대화를 주도합니다. 이때 답은 절대 주지 않습니다.
+
+4. 반복: 사용자와 AI가 최소 5턴 이상의 대화를 강제로 진행합니다.
+
+5. 종료: 5턴 달성 시 종료 버튼이 활성화되며, AI가 지금까지의 내용을 직접 정리하도록 유도합니다.
+
+6. 결과: 사용자가 작성한 최종 정리본과 AI의 분석 정리집을 나란히 배치하여 보여줍니다.
+
+핵심 제약 (제품 철학)
+
+
+   * AI는 절대 코드나 정답을 먼저 제공하지 않으며, 시스템(프롬프트 및 UI)이 이를 강제합니다.
+
+   * 최소 5턴 이상 대화해야 종료가 가능합니다.
+
+   * 데이터는 DB 없이 브라우저의 localStorage에만 저장합니다.
+
+________________
+2. 기술 스택 (수정됨)
+영역
+	선택
+	이유
+	Frontend
+	Vite + React (TypeScript)
+	팀원 숙련도 우선 및 빠른 개발 속도
+	Backend
+	Node.js (Express)
+	API 서버와 AI 로직 분리 관리
+	Styling
+	TailwindCSS + shadcn/ui
+	빠른 UI 구성 및 커스텀 용이
+	AI 모델
+	claude-3-5-sonnet-20240620
+	한국어 품질 및 긴 컨텍스트 처리 우수
+	저장
+	localStorage
+	개인정보 수집 없는 세션 유지
+	통신
+	Axios + SSE
+	AI 스트리밍 응답 구현
+	________________
+3. 프로젝트 구조 (수정됨)
+
+
+Client (Vite)
+      * src/pages/LandingPage.tsx: 온보딩 및 초기 입력
+
+      * src/pages/SessionPage.tsx: 3-Panel 메인 학습 화면
+
+      * src/pages/ResultPage.tsx: 결과 화면 (반반 레이아웃)
+
+      * src/components/: InputPanel, ChatPanel, ProgressPanel 등
+
+      * src/lib/storage.ts: localStorage 유틸리티
+
+Server (Node.js)
+         * src/index.ts: 서버 엔트리 포인트
+         * src/routes/chat.ts: 대화 API (SSE 스트리밍)
+
+         * src/routes/summary.ts: AI 분석 정리집 생성 API
+
+         * src/lib/prompts.ts: 시스템 프롬프트 정의
+
+________________
+4. 타입 정의 (types/index.ts)
+
+
+
+
+TypeScript
+
+
+
+
+export type Message = {
+ id: string;
+ role: 'user' | 'assistant';
+ content: string;
+ createdAt: Date;
+}; [cite: 39, 41, 42, 43]
+
+export type Session = {
+ id: string;
+ title: string;          // 초기 입력 앞 30자 [cite: 54]
+ initialInput: string;   // 초기 코드/기획안 전문 [cite: 55]
+ messages: Message[];    // 대화 내역 [cite: 56]
+ turnCount: number;      // 현재 턴 수 [cite: 57]
+ userFinalOutput: string;// 사용자가 쓴 최종 정리본 [cite: 58]
+ createdAt: Date;
+}; [cite: 46, 47, 48, 49, 51, 52]
+
+export type AISummary = {
+ understood: string[];   // AI 분석: 이해한 것 [cite: 63]
+ lacking: string[];      // AI 분석: 부족한 것 [cite: 64]
+ keyConcepts: string[];  // AI 분석: 핵심 개념 3가지 [cite: 65]
+}; [cite: 60, 61, 62]
+
+________________
+5. 프롬프트 정의 (lib/prompts.ts)
+
+
+SYSTEM_PROMPT
+
+
+            1. 코드를 직접 작성해주지 않는다.
+
+            2. 정답을 먼저 말하지 않는다.
+
+            3. 모든 응답은 반드시 질문으로 끝난다.
+
+            4. 2~3문장 분석 + 1개의 핵심 질문 형식을 유지한다.
+
+FINAL_NUDGE (5턴 이후)
+
+
+"지금까지 정말 잘 생각해오셨어요. 이제 오른쪽 정리 공간에 본인이 이해한 내용을 직접 글로 써보세요."
+
+
+________________
+6. API 명세
+5-1.
+POST /api/chat (SSE 스트리밍)
+               * 역할: 사용자 메시지를 받아 AI 질문을 실시간 반환합니다.
+
+               * 특이사항: turnCount >= 5일 경우 FINAL_NUDGE를 시스템 프롬프트에 추가합니다.
+
+5-2.
+POST /api/summary
+                  * 역할: 전체 세션(initialInput 및 messages)을 분석하여 AISummary 객체를 JSON으로 반환합니다.
+
+________________
+7. 화면 구성 세부 정보
+학습 화면 (/session) 3-Panel 구성
+
+
+                     * 좌측 (InputPanel): 처음 제출한 코드 (읽기 전용).
+
+                     * 중앙 (ChatPanel): AI 대화창 및 사용자 입력창.
+
+                     * 우측 (ProgressPanel): 턴 카운터(N/5) 및 종료 버튼.
+
+종료 버튼 로직
+
+
+                        * 5턴 미만: 비활성화(회색).
+
+                        * 5턴 달성: 버튼 활성화 -> 클릭 시 최종 정리 입력창 노출.
+
+                        * 정리 완료 후 "결과 보기" 클릭 시 /result로 이동.
+
+________________
+8. 발표 핵심 포인트
+
+
+                           * 왜 Vite + Node.js 조합을 선택했는가 (익숙함과 생산성).
+                           * 시스템 프롬프트가 AI의 정답 제공을 어떻게 구조적으로 차단하는가.
+
+                           * 왜 DB 없이 localStorage를 사용했는가 (개인정보 보호 및 MVP 목적).
+
+                           * 5턴 잠금 로직이 학습 효과에 미치는 영향.
