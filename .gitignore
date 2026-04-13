@@ -51,3 +51,9 @@ Thumbs.db
 coverage/
 .vercel
 .serverless
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
