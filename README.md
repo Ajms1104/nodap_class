@@ -7,7 +7,7 @@
 ---
 ### 기획 및 개발 문서 (notion 활용)
 
-📎 https://www.notion.so/e0b50fd1b23b8358b6e3010167261c12?v=68850fd1b23b82409cb78897b964a20f&source=copy_link 
+> 📎 https://www.notion.so/e0b50fd1b23b8358b6e3010167261c12?v=68850fd1b23b82409cb78897b964a20f&source=copy_link 
 ---
 
 ## 핵심 철학
