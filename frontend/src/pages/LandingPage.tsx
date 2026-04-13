@@ -135,7 +135,7 @@ export default function LandingPage() {
               <BookOpen size={16} color="#fff" />
             </div>
             <div>
-              <p className="nd-sidebar-title">NodapClass</p>
+              <p className="nd-sidebar-title">답없는 교실</p>
               <p className="nd-sidebar-tagline">AI가 답을 주지 않습니다</p>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function LandingPage() {
         </div>
 
         <div className="nd-sidebar-bottom">
-          <p className="nd-sidebar-bottom-text">© 2024 NodapClass. Educational Purpose Only.</p>
+          <p className="nd-sidebar-bottom-text">2026 KIT 바이브코딩 공모전 | Two-sense</p>
         </div>
       </aside>
 
@@ -191,7 +191,7 @@ export default function LandingPage() {
 
         {/* 헤더 */}
         <header className="nd-header">
-          <span className="nd-header-title">NodapClass - AI Tutor Chat</span>
+          <span className="nd-header-title">답없는 교실 - AI Tutor Chat</span>
 
           {session && (
             <div className="nd-header-steps">
