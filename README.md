@@ -5,8 +5,8 @@
 답없는 교실(NoDapClass)은 학습자가 AI에게 의존하여 정답만 복사 붙여넣기 하는 습관을 방지하고, 스스로 생각하며 논리적 허점을 메울 수 있도록 설계된 AI 학습 보조 플랫폼입니다.
 
 ---
-## 기획 및 개발 문서
-https://www.notion.so/e0b50fd1b23b8358b6e3010167261c12?v=68850fd1b23b82409cb78897b964a20f&source=copy_link
+### 기획 및 개발 문서 (notion 활용)
+📎 https://www.notion.so/e0b50fd1b23b8358b6e3010167261c12?v=68850fd1b23b82409cb78897b964a20f&source=copy_link
 ---
 
 ## 핵심 철학
@@ -30,7 +30,7 @@ https://www.notion.so/e0b50fd1b23b8358b6e3010167261c12?v=68850fd1b23b82409cb7889
 ### Backend
 
 - Runtime: Node.js (Express)
-- AI Model: Google Gemini API
+- AI Model: GPT 4o & Claude Sonnet 4.6
 - API: Axios + Server-Sent Events (SSE) (AI 스트리밍 응답 구현)
 - Documentation: Swagger UI (/api-docs)
 
@@ -57,14 +57,7 @@ nodap_class/
 
 ## 시작하기
 
-### 1. 환경 변수 설정
-
-`backend` 폴더에 `.env` 파일을 생성하고 필요한 API 키를 설정합니다.
-
-```env
-GEMINI_API_KEY=your_api_key_here
-PORT=4000
-```
+### 1. 환경 변수 설정 (.env 에 API 키가 포함되어 있어 비공개 처리함) 
 
 ### 2. 의존성 설치 및 실행
 
@@ -91,7 +84,9 @@ npm run dev
 
 1. **초기 입력 화면**: 학습할 코드나 기획안 초기 입력.
 2. **분석 워크숍 화면**:
-   - 좌측: 초기 입력 내용 및 실시간 대화 기록.
-   - 중앙: AI의 분석 피드백 및 핵심 질문 카드.
-   - 하단: 답변 입력창 및 진행도 표시.
+   - 좌측: 초기 입력 내용.
+   - 중앙: AI의 분석 피드백 및 핵심 질문 카드, 유저와 AI 대화 내역.
+   - 하단 : 답변 입력창.
+   - 상단 : 진행도 표, PDF 저장.
+   
 3. **결과 리포트 페이지**: 사용자가 직접 쓴 최종 정리본과 AI의 정밀 분석 결과를 비교 분석.
