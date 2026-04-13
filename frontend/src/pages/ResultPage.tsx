@@ -4,7 +4,7 @@ import { storage } from '../lib/storage';
 import type { Session, AISummary } from '../types';
 import { Home, Printer, ChevronRight, CheckCircle, AlertCircle, BookOpen } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:4000/api';const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';const STEPS = [['Problem','Definition'],['Context','Exploration'],['Concept','Mapping'],['Critical','Thinking'],['Solution','Synthesis']];
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';const STEPS = [['Problem','Definition'],['Context','Exploration'],['Concept','Mapping'],['Critical','Thinking'],['Solution','Synthesis']];
 const KEYWORD_CLASSES = ['rp-keyword-blue','rp-keyword-green','rp-keyword-orange','rp-keyword-purple','rp-keyword-pink'];
 
 export default function ResultPage() {
