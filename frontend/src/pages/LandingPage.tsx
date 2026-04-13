@@ -5,7 +5,7 @@ import type { Session, Message } from '../types';
 import { Send, Paperclip, X, ImageIcon, FileText, BookOpen, Lightbulb, Sparkles, Code2, HelpCircle } from 'lucide-react';
 
 type AttachedFile = { id: string; type: 'image' | 'text'; content: string; name: string; };
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 const STEP_LABELS = ['Step 1', 'Step 2', 'Step 3', 'Step 4', 'Step 5+'];
 
 export default function LandingPage() {
