@@ -15,6 +15,8 @@ export default function LandingPage() {
   const [session, setSession] = useState<Session | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const [isFinalizing, setIsFinalizing] = useState(false);
+  const [finalOutput, setFinalOutput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -111,6 +113,22 @@ export default function LandingPage() {
     const upd = storage.addMessage(sess.id, userMsg);
     if (upd) { setSession(upd); await triggerAiResponse(upd, upd.messages, upd.turnCount); }
   };
+
+  const handleFinalSubmit = async () => {
+  if (!finalOutput.trim() || !session) {
+    alert('최종 정리 된 내용을 입력해주세요.');
+    return;
+  }
+  storage.updateFinalOutput(session.id, finalOutput);
+  try {
+    await fetch(`${API_BASE_URL}/sessions/${session.id}/finish`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_final_output: finalOutput })
+    });
+  } catch {}
+  navigate(`/result/${session.id}`);
+};
 
   const parseAI = (content: string) => {
     const am = content.match(/\[분석\](.*?)(?=\[질문\]|$)/s);
@@ -217,8 +235,8 @@ export default function LandingPage() {
             <div className="nd-header-right">
               <span className="nd-turns-badge">{tc >= 5 ? '5+ Turns' : `${tc} / 5`}</span>
               {tc >= 5 && (
-                <button className="nd-finish-btn" onClick={() => navigate(`/result/${session.id}`)}>
-                  <Sparkles size={12} /> Finish
+                <button className="nd-finish-btn" onClick={() => setIsFinalizing(true)}>
+                <Sparkles size={12} /> Finish
                 </button>
               )}
             </div>
@@ -310,6 +328,48 @@ export default function LandingPage() {
           )}
         </div>
 
+        {isFinalizing && (
+  <div style={{
+    borderTop: '1px solid #E2E8F0',
+    background: '#FFFBEB',
+    padding: '16px 24px',
+    flexShrink: 0
+  }}>
+    <div style={{ maxWidth: 700, margin: '0 auto' }}>
+      <p style={{ fontSize: 12, fontWeight: 700, color: '#D97706', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        ✏️ 최종 학습 정리 — 지금까지 배운 내용을 직접 정리해보세요
+      </p>
+      <textarea
+        style={{
+          width: '100%', padding: '12px 16px',
+          background: '#fff', border: '1.5px solid #FDE68A',
+          borderRadius: 12, outline: 'none',
+          fontSize: 14, color: '#1E293B',
+          resize: 'none', minHeight: 100,
+          fontFamily: 'Pretendard, system-ui, sans-serif',
+          boxSizing: 'border-box'
+        }}
+        placeholder="오늘의 학습을 통해 배운 내용을 자신만의 언어로 정리해보세요..."
+        value={finalOutput}
+        onChange={e => setFinalOutput(e.target.value)}
+      />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+        <button
+          onClick={() => setIsFinalizing(false)}
+          style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #E2E8F0', background: '#fff', fontSize: 12, fontWeight: 600, color: '#64748B', cursor: 'pointer' }}
+        >
+          취소
+        </button>
+        <button
+          onClick={handleFinalSubmit}
+          style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: 'linear-gradient(to right, #3B82F6, #6366F1)', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+        >
+          결과 보고서 생성 →
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         {/* 입력창 */}
         <div className="nd-input-area">
           <div className="nd-input-wrap">
@@ -317,7 +377,7 @@ export default function LandingPage() {
               <textarea
                 ref={textareaRef}
                 className="nd-input-textarea"
-                placeholder="Type your answer here or paste code..."
+                placeholder="이곳에 내용을 넣어 AI 튜터와 대화 해보세요!"
                 value={chatInput}
                 onChange={autoResize}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(e as any); } }}

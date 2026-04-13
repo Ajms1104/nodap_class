@@ -76,7 +76,7 @@ export default function ResultPage() {
         {/* Growth Timeline */}
         <div className="rp-card">
           <div className="rp-card-body">
-            <p className="rp-timeline-title">Growth Timeline</p>
+            <p className="rp-timeline-title">학습 성장경로</p>
             <div className="rp-timeline-row">
               <div className="rp-timeline-track" />
               <div className="rp-timeline-fill" style={{ width: `${fillPct}%` }} />
@@ -100,10 +100,10 @@ export default function ResultPage() {
         {/* User Reflection */}
         <div className="rp-card">
           <div className="rp-card-header-orange">
-            <p className="rp-card-label-orange">User Reflection</p>
+            <p className="rp-card-label-orange">나의 학습정리</p>
           </div>
           <div className="rp-card-body">
-            <h3 className="rp-card-title">My Learning Reflection</h3>
+            <h3 className="rp-card-title">내가 정리한(추가한) 내용</h3>
             {session.userFinalOutput
               ? <p style={{ fontSize: 14, color: '#475569', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{session.userFinalOutput}</p>
               : <p style={{ fontSize: 14, color: '#CBD5E1', fontStyle: 'italic' }}>아직 최종 정리 내용이 없습니다.</p>
@@ -114,14 +114,14 @@ export default function ResultPage() {
         {/* AI Tutor Feedback */}
         <div className="rp-card">
           <div className="rp-card-header-blue">
-            <p className="rp-card-label-blue">AI Tutor Feedback</p>
+            <p className="rp-card-label-blue">AI Tutor 피드백</p>
           </div>
           <div className="rp-card-body">
-            <h3 className="rp-card-title">AI Tutor's Insights</h3>
+            <h3 className="rp-card-title">AI Tutor의 분석</h3>
 
             {summary?.keyConcepts && summary.keyConcepts.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', marginBottom: 8 }}>Core Keywords</p>
+                <p style={{ fontSize: 12, fontWeight: 600, color: '#64748B', marginBottom: 8 }}>핵심 키워드</p>
                 <div className="rp-keywords">
                   {summary.keyConcepts.map((k, i) => (
                     <span key={i} className={KEYWORD_CLASSES[i % KEYWORD_CLASSES.length]}>{k}</span>
