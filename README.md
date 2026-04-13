@@ -1,4 +1,8 @@
 # 🤖 답없는 교실 (NoDapClass)
+---
+### 배포
+> https://nodap-class.vercel.app/
+---
 
 > **"AI가 답을 주는 걸 구조적으로 막는 코딩 학습 파트너"**
 
